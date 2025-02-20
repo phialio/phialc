@@ -1,0 +1,26 @@
+!package test
+Entity
+    bool bl
+    string str
+    int8 i8
+    int16 i16
+    int32 i32
+    int64 i64
+    float flt
+    double dbl
+    Entity ent
+    bool[] bls
+    string[] strs
+    int8[] i8s
+    int16[] i16s
+    int32[] i32s
+    int64[] i64s
+    float[] flts
+    double[] dbls
+    Entity[] ents
+    index
+        bl
+        str hash
+        i32 unique
+        i8+i16 hash unique
+        i8+i64
