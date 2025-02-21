@@ -5,7 +5,7 @@ import io.phial.*;
 
 import java.util.*;
 
-public class ${entity.name}UpdateImpl extends ${entity.name}Entity implements ${entity.name}Update {
+final class ${entity.name}UpdateImpl extends ${entity.name}Entity implements ${entity.name}Update {
     private long fieldMarker;
     private ${entity.name} base;
 
@@ -24,13 +24,6 @@ public class ${entity.name}UpdateImpl extends ${entity.name}Entity implements ${
         } else {
             return this.id;
         }
-    }
-
-    @Override
-    public ${entity.name}Update withId(long id) {
-        this.id = id;
-        this.fieldMarker |= 1L;
-        return this;
     }
 <#list entity.fields as field>
 
@@ -63,10 +56,5 @@ public class ${entity.name}UpdateImpl extends ${entity.name}Entity implements ${
     @Override
     public ${entity.name}Update update() {
         return this;
-    }
-
-    @Override
-    public ${entity.name}UpdateImpl clone() {
-        return (${entity.name}UpdateImpl) super.clone();
     }
 }

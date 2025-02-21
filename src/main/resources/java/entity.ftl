@@ -5,14 +5,14 @@ import io.phial.*;
 
 import java.util.*;
 
-public class ${entity.name}Entity extends AbstractEntity implements ${entity.name} {
+class ${entity.name}Entity extends AbstractEntity implements ${entity.name} {
 <#list entity.fields as field>
     protected ${getJavaType(field.type)} ${field.name};
 </#list>
 
     public ${entity.name}Entity() {
 <#list entity.fields as field>
-        <#if field.type == "string">
+        <#if field.type.name == "string">
         this.${field.name} = "";
         <#elseif field.type.container>
         this.${field.name} = Phial.EMPTY_${getJavaType(field.type.elementType)?c_upper_case}_ARRAY;
@@ -37,6 +37,6 @@ public class ${entity.name}Entity extends AbstractEntity implements ${entity.nam
 
     @Override
     public ${entity.name}Update update() {
-        return new ${entity.name}UpdateImpl(this);
+        return ${entity.name}Update.newInstance(this);
     }
 }

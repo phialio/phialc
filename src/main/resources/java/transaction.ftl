@@ -79,7 +79,7 @@ public class Transaction {
     <#return index.fields?map(field -> getJavaType(field.type) + " " + field.name + suffix)?join(", ")>
 </#function>
 <#function keyBuild entity index suffix>
-    <#return "new " + entity.name + "UpdateImpl()" + index.fields?map(field -> ".with" + field.name?cap_first + "(" + field.name + suffix + ")")?join("")>
+    <#return entity.name + "Update.newInstance()" + index.fields?map(field -> ".with" + field.name?cap_first + "(" + field.name + suffix + ")")?join("")>
 </#function>
 
 <#list entities as entity>
