@@ -3,26 +3,14 @@ package io.phial.phialc;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class PhialParser {
-    private static class FieldTypeInfo {
-        String type;
-        int lineNumber;
-        int typeColumnNumber;
-        String link;
-        int linkColumnNumber;
-    }
-
     private final PhialSpec phialSpec;
     private EntitySpec entitySpec;
     private final Map<String, FieldSpec> fieldMap = new HashMap<>();
-    private final List<FieldTypeInfo> fieldsToCheck = new ArrayList<>();
     private boolean indexPart;
     private String fieldIndent;
     private String indexIndent;
@@ -93,21 +81,6 @@ public class PhialParser {
                         e -> e.getFields().stream()
                                 .map(FieldSpec::getName)
                                 .collect(Collectors.toSet())));
-        for (var info : this.fieldsToCheck) {
-            var fields = entityFields.get(info.type);
-            if (fields == null) {
-                var e = new ParserException("invalid type " + info.type);
-                e.setLineNumber(info.lineNumber);
-                e.setColumnNumber(info.typeColumnNumber);
-                throw e;
-            }
-            if (info.link != null && !fields.contains(info.link)) {
-                var e = new ParserException("invalid link field " + info.link);
-                e.setLineNumber(info.lineNumber);
-                e.setColumnNumber(info.linkColumnNumber);
-                throw e;
-            }
-        }
     }
 
     private static String getIndent(String s) {
@@ -212,32 +185,6 @@ public class PhialParser {
             e.setColumnNumber(this.fieldIndent.length());
             throw e;
         }
-        FieldType baseType;
-        if (type instanceof ArrayType) {
-            baseType = ((ArrayType) type).getElementType();
-        } else {
-            baseType = type;
-        }
-        if (!baseType.isPrimitive()) {
-            var typeName = baseType.getName();
-            if (!Character.isUpperCase(typeName.charAt(0))) {
-                var e = new ParserException("invalid type " + typeString);
-                e.setColumnNumber(this.fieldIndent.length());
-                throw e;
-            }
-            try {
-                PhialParser.checkName("", typeName);
-            } catch (ParserException e) {
-                var e1 = new ParserException("invalid type " + typeString);
-                e1.setColumnNumber(e.getColumnNumber() + this.fieldIndent.length());
-                throw e1;
-            }
-            var info = new FieldTypeInfo();
-            info.type = typeName;
-            info.lineNumber = lineNumber;
-            info.typeColumnNumber = this.fieldIndent.length();
-            this.fieldsToCheck.add(info);
-        }
         line = line.substring(typeString.length());
         int offset = this.fieldIndent.length() + typeString.length();
         var spaces = PhialParser.getIndent(line);
@@ -257,38 +204,15 @@ public class PhialParser {
         }
         offset += name.length();
         line = line.substring(name.length());
-        String link = null;
         if (!line.isEmpty()) {
-            if (baseType.isPrimitive()) {
-                var e = new ParserException("primitive types can not have links");
-                e.setColumnNumber(offset);
-                throw e;
-            }
             spaces = PhialParser.getIndent(line);
-            offset += spaces.length();
             line = line.substring(spaces.length());
-            var token = PhialParser.getToken(line);
-            if (!token.equals("->")) {
-                var e = new ParserException("invalid token " + token);
-                e.setColumnNumber(offset);
-                throw e;
-            }
-            line = line.substring(2);
-            spaces = PhialParser.getIndent(line);
             offset += spaces.length();
-            line = line.substring(spaces.length());
-            try {
-                PhialParser.checkName("field", line);
-            } catch (ParserException e) {
-                e.setColumnNumber(offset + e.getColumnNumber());
-                throw e;
-            }
-            link = line;
-            var info = this.fieldsToCheck.get(this.fieldsToCheck.size() - 1);
-            info.link = link;
-            info.linkColumnNumber = offset;
+            var e = new ParserException("unexpected token " + line);
+            e.setColumnNumber(offset);
+            throw e;
         }
-        var fieldSpec = new FieldSpec(this.entitySpec.getFieldCount(), name, type, link);
+        var fieldSpec = new FieldSpec(this.entitySpec.getFieldCount(), name, type);
         this.entitySpec.addField(fieldSpec);
         this.fieldMap.put(name, fieldSpec);
     }

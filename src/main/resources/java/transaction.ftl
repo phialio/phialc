@@ -10,6 +10,9 @@ import java.util.stream.*;
 public class Transaction {
     private static final Phial PHIAL = Phial.getInstance();
     private final io.phial.Transaction trx;
+    private static final int COMMITTED = 1;
+    private static final int ROLLBACKED = 2;
+    private int status;
 
     static {
 <#list entities as entity>
@@ -36,26 +39,22 @@ public class Transaction {
                         var e2 = (${entity.name}Entity) entity2;
                         int c;
         <#list index.fields as field>
-            <#if field.type.container>
-                        c = Arrays.compare(e1.${getJavaGetterName(field)}(), e2.${getJavaGetterName(field)}());
-            <#else>
-                <#switch field.type.name>
-                    <#on "string", "date">
+            <#switch field.type.name>
+                <#on "string", "date">
                         c = e1.${getJavaGetterName(field)}().compareTo(e2.${getJavaGetterName(field)}());
-                    <#on "int8">
+                <#on "int8">
                         c = Byte.compare(e1.${getJavaGetterName(field)}(), e2.${getJavaGetterName(field)}());
-                    <#on "int16">
+                <#on "int16">
                         c = Short.compare(e1.${getJavaGetterName(field)}(), e2.${getJavaGetterName(field)}());
-                    <#on "int32">
+                <#on "int32">
                         c = Integer.compare(e1.${getJavaGetterName(field)}(), e2.${getJavaGetterName(field)}());
-                    <#on "int64">
+                <#on "int64">
                         c = Long.compare(e1.${getJavaGetterName(field)}(), e2.${getJavaGetterName(field)}());
-                    <#on "float">
+                <#on "float">
                         c = Float.compare(e1.${getJavaGetterName(field)}(), e2.${getJavaGetterName(field)}());
-                    <#on "double">
+                <#on "double">
                         c = Double.compare(e1.${getJavaGetterName(field)}(), e2.${getJavaGetterName(field)}());
-                </#switch>
-            </#if>
+            </#switch>
                         if (c != 0) {
                             return c;
                         }

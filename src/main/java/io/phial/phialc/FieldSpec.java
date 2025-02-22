@@ -1,16 +1,14 @@
 package io.phial.phialc;
 
 public class FieldSpec {
-    private int id;
+    private final int id;
     private final String name;
     private final FieldType type;
-    private final String link;
 
-    public FieldSpec(int id, String name, FieldType type, String link) {
+    public FieldSpec(int id, String name, FieldType type) {
         this.id = id;
         this.name = name;
         this.type = type;
-        this.link = link;
     }
 
     public int getId() {
@@ -23,9 +21,5 @@ public class FieldSpec {
 
     public FieldType getType() {
         return this.type;
-    }
-
-    public String getLink() {
-        return this.link;
     }
 }

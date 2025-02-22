@@ -18,9 +18,6 @@
 }>
 
 <#function getJavaType type>
-    <#if type.container>
-        <#return getJavaType(type.elementType) + "[]">
-    </#if>
     <#return javaTypeMap[type.name]>
 </#function>
 

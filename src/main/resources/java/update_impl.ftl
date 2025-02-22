@@ -34,14 +34,7 @@ final class ${entity.name}UpdateImpl extends ${entity.name}Entity implements ${e
 
     @Override
     public ${entity.name}Update with${field.name?cap_first}(${getJavaType(field.type)} ${field.name}) {
-    <#if field.type.container>
-        if (${field.name} == null) {
-            throw new NullPointerException("${field.name} should not be null");
-        }
-        this.${field.name} = Arrays.copyOf(${field.name}, ${field.name}.length);
-    <#else>
         this.${field.name} = ${field.name};
-    </#if>
         this.fieldMarker |= 1L << ${field?index + 1};
         return this;
     }

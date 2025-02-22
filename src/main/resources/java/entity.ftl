@@ -14,8 +14,6 @@ class ${entity.name}Entity extends AbstractEntity implements ${entity.name} {
 <#list entity.fields as field>
         <#if field.type.name == "string">
         this.${field.name} = "";
-        <#elseif field.type.container>
-        this.${field.name} = Phial.EMPTY_${getJavaType(field.type.elementType)?c_upper_case}_ARRAY;
         </#if>
 </#list>
     }
